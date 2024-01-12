@@ -1,4 +1,4 @@
-package com.capstone.api;
+package com.wellweb.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
