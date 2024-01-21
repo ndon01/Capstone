@@ -4,7 +4,7 @@
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/Inter-Black.otf", "./assets/fonts/Inter-SemiBold.otf"]
+          "fonts": ["./assets/fonts/Inter-Black.otf", "./assets/fonts/Inter-SemiBold.otf", "./assets/fonts/Inter-Medium.otf"]
         }
       ]
     ],

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth") // http:/localhost:8080/auth
 public class AuthenticationController {
 
     @GetMapping("/login")
