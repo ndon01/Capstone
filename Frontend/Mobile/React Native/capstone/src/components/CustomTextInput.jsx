@@ -23,6 +23,7 @@ export const CustomTextInput = ({
   isValid = false,
   isProcessing = false,
   onEndEditing = () => {},
+  type="text",
 }) => {
   const theme = useContext(ThemeContext);
   const [showDefaultText, setShowDefaultText] = useState(true);
@@ -74,7 +75,9 @@ export const CustomTextInput = ({
             color: theme.theme === "light" ? "#000000" : "#FFFFFF",
             fontSize: 16,
             display: showDefaultText ? "none" : "flex",
-          }}
+          }
+        }
+          type="em"
           value={value}
           defaultValue={defaultValue}
           onChangeText={onChangeText}

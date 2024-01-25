@@ -1,0 +1,4 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "compiler.automake.allow.when.app.running": true
+}

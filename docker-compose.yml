@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  authentication-database:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auth_db
+    ports:
+      - "5000:5432"
+    volumes:
+      - authentication-database-volume:/var/lib/postgresql/data
+
+volumes:
+  authentication-database-volume:
+  

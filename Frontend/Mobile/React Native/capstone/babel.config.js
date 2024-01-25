@@ -4,12 +4,13 @@ module.exports = function(api) {
     presets: ['babel-preset-expo'],
     plugins: [
       ["module-resolver", {
-        "root": ["./"],
+        "root": ["."],
         "alias": {
           "components": "./src/components",
           "screens": "./src/screens",
           "utils": "./src/utils",
           "assets": "./assets",
+          "api": "./src/api",
         }
       }]
     ]

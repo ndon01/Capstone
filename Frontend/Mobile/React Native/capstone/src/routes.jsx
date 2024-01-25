@@ -2,7 +2,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LandingScreen from './screens/LandingScreen';
-import RegistrationScreen from 'screens/RegistrationScreen';
+import RegistrationScreen from 'screens/RegistrationScreen/RegistrationScreen';
 import LoginScreen from 'screens/LoginScreen';
 
 

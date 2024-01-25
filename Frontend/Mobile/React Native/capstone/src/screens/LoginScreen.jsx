@@ -4,7 +4,7 @@ import { View, Button, Platform, TextInput, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemeContext } from "src/contexts/ThemeContext";
 
-import { CustomInput } from "components/CustomInput";
+import { CustomInput } from "components/CustomDateInput";
 import { CustomTextInput } from "components/CustomTextInput";
 
 const LoginScreen = ({ navigation }) => {
@@ -72,7 +72,7 @@ const LoginScreen = ({ navigation }) => {
             style={{
               color: theme.theme === "light" ? "#000000" : "#FFFFFF",
               fontSize: 24,
-              fontFamily: "Inter_600SemiBold",
+              fontFamily: "Inter-SemiBold",
             }}
           >
             Authentication
@@ -88,7 +88,7 @@ const LoginScreen = ({ navigation }) => {
                   fontSize: 18,
                   fontWeight: 200,
                   marginBottom: 10,
-                  fontFamily: "Inter_200ExtraLight",
+                  fontFamily: "Inter-ExtraLight",
                 }}
               >
                 Username or Email Address
@@ -98,6 +98,7 @@ const LoginScreen = ({ navigation }) => {
                 defaultValue={"Username / Email Address"}
                 value={identifier}
                 onChangeText={handleIdentifierChange}
+          
               />
 
             </View>
@@ -109,7 +110,7 @@ const LoginScreen = ({ navigation }) => {
                   fontSize: 18,
                   fontWeight: 200,
                   marginBottom: 10,
-                  fontFamily: "Inter_200ExtraLight",
+                  fontFamily: "Inter-ExtraLight",
                 }}
               >
                 Password

@@ -1,10 +1,14 @@
 package com.wellweb.api.domains.authentication.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
+@RequestMapping("/authentication")
 public class AuthenticationController {
 
     @PostMapping("/login")
@@ -16,6 +20,9 @@ public class AuthenticationController {
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequest registerRequest) {
         // TODO: Implement registration logic here
+
+        System.out.println("Attempting to register user with username: " + registerRequest.username);
+
         return "Registration successful";
     }
 
@@ -30,10 +37,11 @@ public class AuthenticationController {
     }
 
     private static class RegisterRequest {
+        private String displayName;
         private String username;
+        private String dateOfBirth;
         private String password;
-        private String email;
-
+        private String confirmPassword;
         // Getters and setters
     }
     

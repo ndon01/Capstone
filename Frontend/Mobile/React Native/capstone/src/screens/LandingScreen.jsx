@@ -16,7 +16,6 @@ import {
 import { Platform } from "react-native";
 import { ThemeContext } from "src/contexts/ThemeContext";
 
-
 const LandingScreen = ({ navigation }) => {
     const theme = useContext(ThemeContext);
 
@@ -103,7 +102,7 @@ const LandingScreen = ({ navigation }) => {
                         >
                             <Text
                                 style={{
-                                    fontFamily: "Inter_600SemiBold",
+                                    fontFamily: "Inter-SemiBold",
                                     fontSize: 48,
                                     letterSpacing: 10,
                                     color: theme.theme === "light" ? "#07293D": "#FEFDFB",

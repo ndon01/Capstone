@@ -16,7 +16,7 @@ import { Platform } from "react-native";
 import { ThemeContext } from "src/contexts/ThemeContext";
 
 
-const CustomButtonComponent = ({ title, flipped = false, onTouchEnd, disabled = false}) => {
+const CustomButtonComponent = ({ title, flipped = false, onTouchEnd, disabled = false, borderRadius = 10}) => {
     const theme = useContext(ThemeContext);
 
 
@@ -56,7 +56,7 @@ const CustomButtonComponent = ({ title, flipped = false, onTouchEnd, disabled = 
                             style={{
                                 color: theme.theme === "light" ? "#07293D" : "#ADCDC9",
                                 fontSize: 18,
-                                fontFamily: "Inter_500Medium",
+                                fontFamily: "Inter-Medium",
                             }}
                         >
                             {title}
@@ -99,7 +99,7 @@ const CustomButtonComponent = ({ title, flipped = false, onTouchEnd, disabled = 
                         style={{
                             color: theme.theme === "light" ? "white" : "black",
                             fontSize: 18,
-                            fontFamily: "Inter_500Medium",
+                            fontFamily: "Inter-Medium",
                         }}
                     >
                         {title}
