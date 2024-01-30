@@ -258,22 +258,17 @@ export const RegistrationFormComponent = () => {
   };
 
   const handleRegistrationSubmission = () => {
+    console.log(
+      `Registering Display Name: ${displayName}\nUsername: ${username}\nEmail: ${email}\nDate of Birth: ${dateOfBirth.toLocaleDateString()}\nPassword: ${password}`
+    );
 
-
-    console.log(`Display Name: ${displayName}\nUsername: ${username}\nEmail: ${email}\nDate of Birth: ${dateOfBirth.toLocaleDateString()}\nPassword: ${password}`)
-
-     axios.post("http://localhost:8080/authentication/register", {
+    axios.post("http://localhost:8080/authentication/register", {
       displayName: displayName,
       username: username,
       email: email,
       dateOfBirth: dateOfBirth,
       password: password,
-    })
-
-
-
-
-
+    });
   };
 
   useEffect(() => {
@@ -298,11 +293,27 @@ export const RegistrationFormComponent = () => {
     );
   }, [displayName, username, email, dateOfBirth, password, confirmPassword]);
 
+  const [response, setResponse] = useState("");
 
-    const navigation = useNavigation();
+  useEffect(() => {
+    
+    axios.post("http://172.20.10.2:8080/authentication/register", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      return response.data;
+    } ).then((data) => {
+      console.log(data);
+      setResponse(data);
+    }).catch(console.error)
+  }, []);
+
+  const navigation = useNavigation();
 
   return (
     <>
+    <Text>{response}</Text>
       <KeyboardAwareScrollView style={{ paddingHorizontal: 25 }}>
         {/* Dispaly Name */}
         <FormQuestionComponent title="What should we call you?">

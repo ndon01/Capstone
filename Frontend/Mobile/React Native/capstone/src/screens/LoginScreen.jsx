@@ -6,6 +6,7 @@ import { ThemeContext } from "src/contexts/ThemeContext";
 
 import { CustomInput } from "components/CustomDateInput";
 import { CustomTextInput } from "components/CustomTextInput";
+import axios from "axios";
 
 const LoginScreen = ({ navigation }) => {
   const theme = useContext(ThemeContext);
@@ -19,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
   const [isLoginDisabled, setIsLoginDisabled] = useState(true);
 
   // Handlers
-  
+
   const handleIdentifierChange = (text) => {
     setIdentifier(text);
     if (identifier.length >= 1 && password.length >= 1) {
@@ -38,18 +39,26 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  const postLogin = async () => {
+    console.log("postLogin");
+    axios
+      .post("/authentication/login")
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-  
   const handleLogin = () => {
     if (identifier.length >= 1 && password.length >= 1) {
-      alert("Username: " + identifier + "\nPassword: " + password)
+      postLogin();
+      alert("Username: " + identifier + "\nPassword: " + password);
     } else {
       setIsLoginDisabled(true);
     }
-
   };
-
-
 
   return (
     <SafeAreaView
@@ -98,9 +107,7 @@ const LoginScreen = ({ navigation }) => {
                 defaultValue={"Username / Email Address"}
                 value={identifier}
                 onChangeText={handleIdentifierChange}
-          
               />
-
             </View>
             {/* Password */}
             <View style={{ marginBottom: 10 }}>
@@ -149,7 +156,11 @@ const LoginScreen = ({ navigation }) => {
             width: "48%",
           }}
         >
-          <CustomButtonComponent title="Login" onTouchEnd={handleLogin} disabled={isLoginDisabled} />
+          <CustomButtonComponent
+            title="Login"
+            onTouchEnd={handleLogin}
+            disabled={isLoginDisabled}
+          />
         </View>
       </View>
     </SafeAreaView>

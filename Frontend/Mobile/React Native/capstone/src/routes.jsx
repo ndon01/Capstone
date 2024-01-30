@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LandingScreen from './screens/LandingScreen';
 import RegistrationScreen from 'screens/RegistrationScreen/RegistrationScreen';
 import LoginScreen from 'screens/LoginScreen';
+import { DiaryScreen } from 'screens/DiaryScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -13,6 +14,8 @@ const Routes = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator>
+
+                
                 <Stack.Screen name="LandingScreen" component={LandingScreen} options={{
                     headerShown: false,
                     headerTitle: '',
@@ -30,6 +33,11 @@ const Routes = () => {
                     headerTitle: 'Login',
                     
                 }}/>    
+
+<Stack.Screen name="DiaryScreen" component={DiaryScreen} options={{
+                    headerShown: false,
+                    headerTitle: '',
+                }}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

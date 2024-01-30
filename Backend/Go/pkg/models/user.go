@@ -1,0 +1,9 @@
+package models
+
+type User struct {
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password,omitempty"`
+	// Include other relevant fields such as CreatedAt, UpdatedAt, etc.
+}

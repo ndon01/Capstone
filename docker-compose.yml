@@ -1,18 +1,29 @@
 version: '3.8'
 
 services:
-  authentication-database:
+  database:
     image: postgres:14.1-alpine
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=auth_db
+      - POSTGRES_DB=db
     ports:
       - "5000:5432"
     volumes:
-      - authentication-database-volume:/var/lib/postgresql/data
+      - database-volume:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+    ports:
+      - "5001:27017"
+    volumes:
+      - mongodb-volume:/data/db
 
 volumes:
-  authentication-database-volume:
-  
+  database-volume:
+  mongodb-volume:
