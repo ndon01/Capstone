@@ -24,6 +24,19 @@ services:
     volumes:
       - mongodb-volume:/data/db
 
+  rabbitmq:
+    image: "rabbitmq:management"
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq
+    ports:
+      - "5002:5672"
+      - "5003:15672"
+    volumes:
+      - rabbitmq-volume:/var/lib/rabbitmq 
+
 volumes:
   database-volume:
   mongodb-volume:
+  rabbitmq-volume:

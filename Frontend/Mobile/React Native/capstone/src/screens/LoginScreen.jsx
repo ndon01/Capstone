@@ -39,22 +39,23 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const postLogin = async () => {
-    console.log("postLogin");
-    axios
-      .post("/authentication/login")
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const postLogin = () => {
+    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/authentication/login`, {
+      identifier: identifier,
+      password: password,
+    }).then((response) => {
+        if (response.status === 200) {
+          console.log("Login Successful"); 
+        }
+      }).catch((error) => {
+        console.error(error);
+      }
+    );
   };
 
   const handleLogin = () => {
     if (identifier.length >= 1 && password.length >= 1) {
       postLogin();
-      alert("Username: " + identifier + "\nPassword: " + password);
     } else {
       setIsLoginDisabled(true);
     }

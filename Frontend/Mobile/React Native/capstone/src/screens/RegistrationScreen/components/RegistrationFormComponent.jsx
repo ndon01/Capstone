@@ -257,18 +257,25 @@ export const RegistrationFormComponent = () => {
     fetch();
   };
 
-  const handleRegistrationSubmission = () => {
-    console.log(
-      `Registering Display Name: ${displayName}\nUsername: ${username}\nEmail: ${email}\nDate of Birth: ${dateOfBirth.toLocaleDateString()}\nPassword: ${password}`
-    );
+  const postRegistration = () => {
 
-    axios.post("http://localhost:8080/authentication/register", {
+  };
+
+  const handleRegistrationSubmission = () => {
+    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/authentication/register`, {
       displayName: displayName,
       username: username,
-      email: email,
+      emailAddress: email,
       dateOfBirth: dateOfBirth,
       password: password,
-    });
+    }).then((response) => {
+        if (response.status === 200) {
+          console.log("Registration Successful"); 
+        }
+      }).catch((error) => {
+        console.error(error);
+      }
+    );
   };
 
   useEffect(() => {
@@ -294,20 +301,6 @@ export const RegistrationFormComponent = () => {
   }, [displayName, username, email, dateOfBirth, password, confirmPassword]);
 
   const [response, setResponse] = useState("");
-
-  useEffect(() => {
-    
-    axios.post("http://172.20.10.2:8080/authentication/register", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((response) => {
-      return response.data;
-    } ).then((data) => {
-      console.log(data);
-      setResponse(data);
-    }).catch(console.error)
-  }, []);
 
   const navigation = useNavigation();
 
