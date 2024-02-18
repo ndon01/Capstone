@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "scheme": "com.wellweb",
+    "name": "WellWeb",
+    "slug": "WellWeb",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/images/LogoNoBackground.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./src/assets/images/LogoNoBackground.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/images/LogoNoBackground.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./src/assets/images/LogoNoBackground.png"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
