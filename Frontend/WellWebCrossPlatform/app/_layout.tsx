@@ -85,7 +85,7 @@ export default function RootLayout(): React.JSX.Element {
     <>
       <StatusBar />
       <GestureHandlerRootView style={{ flex: 1}}>
-        <ConfigProvider apiBaseUrl="192.168.1.128">
+        <ConfigProvider apiBaseUrl="PUT API URL HERE"> {/* Was changing between wifi ips in dev, in production this would be one url and really only needs to be in .env, config can be used for this use and also local user configs when needed later*/}
           <APIClientProvider>
             <Stack screenOptions={{headerShown: false}} />
           </APIClientProvider>
