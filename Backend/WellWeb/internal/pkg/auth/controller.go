@@ -3,6 +3,7 @@ package auth
 import (
 	"WellWeb/internal/util/requestutil"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -18,6 +19,19 @@ func newController(service *service) *controller {
 	return controller
 }
 
+type Response struct {
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+// Access Token Controller & Schema
+/*
+	Access Tokens are going to be short lived,
+	and will be used to authenticate the
+	user for a short period of time.
+*/
+
 /* Login Controller & Schema */
 type LoginRequest struct {
 	Username string `json:"username"`
@@ -25,7 +39,41 @@ type LoginRequest struct {
 }
 
 func (controller *controller) Login(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Login"))
+	if requestutil.ValidateRequestMethod("POST", w, r) != 0 {
+		return
+	}
+
+	if requestutil.ValidateContentType("application/json", w, r) != 0 {
+		return
+	}
+
+	var loginRequest LoginRequest
+	err := json.NewDecoder(r.Body).Decode(&loginRequest)
+	if err != nil {
+		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
+		return
+	}
+
+	if len(loginRequest.Username) == 0 || len(loginRequest.Password) == 0 {
+		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("Login Request: ", loginRequest)
+
+	token, err := (*controller.service).loginUserWithUsernameAndPassword(loginRequest.Username, loginRequest.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Authorization", "Bearer "+token)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"token": token,
+	})
+
 }
 
 /* Register Controller & Schema */
@@ -45,14 +93,22 @@ func (controller *controller) Login(w http.ResponseWriter, r *http.Request) {
 			"email_address": "email_address", (optional if method is phone)
 			"phone_number": "phone_number" (optional if method is email)
 		}
+
+	Response:
+		{
+			"token": "token"
+		}
 */
 
 type RegisterRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
 
-	EmailAddress string `json:"email_address"`
-	PhoneNumber  string `json:"phone_number"`
+type RegisterResponse struct {
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 func (controller *controller) Register(w http.ResponseWriter, r *http.Request) {
@@ -65,8 +121,6 @@ func (controller *controller) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check for Method
-	method := r.URL.Query().Get("method")
 	var registerRequest RegisterRequest
 	err := json.NewDecoder(r.Body).Decode(&registerRequest)
 	if err != nil {
@@ -74,17 +128,21 @@ func (controller *controller) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch method {
-	case "email":
-		controller.service.RegisterWithEmailAddress(
-			registerRequest.EmailAddress,
-			registerRequest.Username,
-			registerRequest.Password,
-		)
-	case "phone":
-
-	default:
-		http.Error(w, "Valid Registration Method Not Provided", http.StatusNotAcceptable)
+	if len(registerRequest.Username) == 0 || len(registerRequest.Password) == 0 {
+		http.Error(w, "Invalid Request Body", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Println("Register Request: ", registerRequest)
+
+	token, err := (*controller.service).registerUser(registerRequest.Username, registerRequest.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Authorization", "Bearer "+*token)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"token": *token})
 }

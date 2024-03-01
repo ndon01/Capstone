@@ -1,6 +1,15 @@
 package auth
 
-import "strings"
+import (
+	"WellWeb/internal/util/passwordutil"
+	"WellWeb/internal/util/tokenutil"
+	"errors"
+	"fmt"
+	"strconv"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 type service struct {
 	repository *repository
@@ -18,113 +27,148 @@ func newService(repository *repository) *service {
 	Registration
 */
 
-func (service *service) ValidateUsername(username string) int {
-	/*
-		Usernames must be between 1 and 20 characters long.
-		Usernames must only contain alphanumeric characters and underscores.
-		Usernames must be unique. (Case insensitive)
-	*/
+func (service *service) registerUser(username string, password string) (*string, error) {
+	// Validate Username is Unique
+	var exists bool
+	if exists, _ = service.repository.DoesUsernameExist(username); exists {
+		fmt.Printf("Username Exists: %s\n", username)
+		return nil, errors.New("Username Already Exists")
+	}
+	fmt.Printf("Username Available: %s\n", username)
 
-	// remove leading and trailing whitespace
-	username = strings.TrimSpace(username)
+	// Validate Password
 
-	if len(username) == 0 || len(username) > 20 {
-		return 1
+	// Hash Password
+	hashedPass, err := passwordutil.HashPassword(password)
+	if err != nil {
+		fmt.Printf("Error Hashing Password: %s\n", err)
+		return nil, errors.New("error with password, try another password")
+	}
+	fmt.Print("Password Hashed\n")
+
+	// Register User
+	user, err := service.repository.CreateUser(username, hashedPass)
+	if err != nil {
+		fmt.Printf("Error Creating User in DB: %s\n", err)
+		return nil, err
 	}
 
-	// check if username only contains alphanumeric characters and underscores
-	for _, char := range username {
-		if char <= 'a' && char >= 'z' { // char is lowercase
-			continue
-		}
+	// Generate Refresh Token
 
-		if char <= 'A' && char >= 'Z' { // char is uppercase
-			continue
-		}
-
-		if char <= '0' && char >= '9' { // char is number
-			continue
-		}
-
-		if char == '_' { // char is underscore
-			continue
-		}
-
-		return 1
+	claims := &jwt.RegisteredClaims{
+		Subject:   strconv.Itoa(user.ID),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+		Issuer:    "Auth",
+		Audience:  jwt.ClaimStrings{"Auth"},
 	}
 
-	// check if username is unique
-	usernameExists, err := service.repository.DoesUsernameExist(username)
+	// Generate Token
 
-	if err != nil { // couldn't check if username exists
-		return 1
+	token, err := tokenutil.GenerateTokenWithClaims(claims)
+	if err != nil {
+		fmt.Println("Error Generating Token: ", err)
+		return nil, err
 	}
 
-	if usernameExists { // username already exists
-		return 1
-	}
+	fmt.Printf("Token Generated: %s\n", token)
 
-	return 0
+	fmt.Printf("User Created: %s (%d)", user.Username, user.ID)
+	return &token, nil
 }
 
-func (service *service) ValidatePassword(password string) int {
-	/*
-		Passwords must be between 8 and 32 characters long.
-		Passwords must contain:
-			- At least one lowercase letter.
-			- At least one uppercase letter.
-			- At least one number.
-			- At least one special character. (!@#$%^&*+-=_)
-		Passwords must not contain spaces.
-	*/
+// Login
 
-	if len(password) < 8 || len(password) > 32 {
-		return 1
+func (service *service) loginUserWithUsernameAndPassword(username string, password string) (string, error) {
+	// Get User Auth
+	user, err := service.repository.GetUserByUsername(username)
+	if err != nil {
+		return "", err
 	}
 
-	var (
-		hasLowercase = false
-		hasUppercase = false
-		hasNumber    = false
-		hasSpecial   = false
-	)
+	fmt.Printf("User Found: %s (%d)\n", user.Username, user.ID)
 
-	for _, char := range password {
-		if char <= 'a' && char >= 'z' { // char is lowercase
-			hasLowercase = true
-			continue
-		}
+	userAuth, err := service.repository.GetUserAuthByUserID(user.ID)
 
-		if char <= 'A' && char >= 'Z' { // char is uppercase
-			hasUppercase = true
-			continue
-		}
-
-		if char <= '0' && char >= '9' { // char is number
-			hasNumber = true
-			continue
-		}
-
-		// char is special
-		if char == '!' || char == '@' || char == '#' || char == '$' || char == '%' || char == '^' || char == '&' || char == '*' || char == '+' || char == '-' || char == '=' || char == '_' { // char is special
-			hasSpecial = true
-			continue
-		}
-
-		return 1
+	if err != nil {
+		fmt.Println("Error Getting User Auth: ", err)
+		return "", err
 	}
 
-	if !hasLowercase || !hasUppercase || !hasNumber || !hasSpecial {
-		return 1
+	fmt.Printf("User Auth Found: %d\n", userAuth.ID)
+
+	// Check Password
+	if !passwordutil.CheckPasswordHash(password, userAuth.Password) {
+		fmt.Println("Invalid Password")
+		return "", errors.New("invalid password or username")
 	}
 
-	return 0
+	fmt.Printf("User Authenticated: %s (%d)\n", username, user.ID)
+
+	claims := &jwt.RegisteredClaims{
+		Subject:   strconv.Itoa(user.ID),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+		Issuer:    "Auth",
+		Audience:  jwt.ClaimStrings{"Auth"},
+	}
+
+	// Generate Token
+	token, err := tokenutil.GenerateTokenWithClaims(claims)
+	if err != nil {
+		fmt.Println("Error Generating Token: ", err)
+		return "", err
+	}
+
+	fmt.Printf("Token Generated: %s\n", token)
+
+	return token, nil
 }
 
-func (service *service) RegisterWithPhoneNumber(phoneNumber string, username string, password string) {
+// Sessions
 
-}
+func (service *service) startSession(token *string) (*string, error) {
+	// Get Token
+	var decodedToken *jwt.Token
+	var err error
 
-func (service *service) RegisterWithEmailAddress(emailAddress string, username string, password string) {
+	decodedToken, err = tokenutil.DecodeToken(*token)
+	if err != nil {
+		fmt.Println("Error Decoding Token: ", err)
+		return nil, err
+	}
 
+	if !decodedToken.Valid {
+		fmt.Println("Invalid Token")
+		return nil, errors.New("invalid token")
+	}
+
+	// Get User ID
+	var userId string
+	userId, err = decodedToken.Claims.GetSubject()
+	if err != nil {
+		fmt.Println("Error Getting User ID: ", err)
+		return nil, err
+	}
+
+	fmt.Printf("User ID: %s\n", userId)
+
+	// Create the Claims
+	claims := &jwt.RegisteredClaims{
+		Subject:   userId,
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 1)),
+		Issuer:    "Auth",
+		Audience:  jwt.ClaimStrings{"All"},
+	}
+
+	var hotToken string
+	hotToken, err = tokenutil.GenerateTokenWithClaims(claims)
+
+	if err != nil {
+		fmt.Println("Error Generating Token")
+		return nil, errors.New("error generating token")
+	}
+
+	return &hotToken, nil
 }

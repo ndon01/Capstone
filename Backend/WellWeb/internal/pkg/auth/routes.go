@@ -19,7 +19,10 @@ func newRoutes(serverPointer *server.Server, controllerPointer *controller) *rou
 
 	// Initialize Routes
 
+	// Retrieve a refresh token
 	server.AddApiRoute("/auth/login", controller.Login)
+
+	// Account Registration
 	server.AddApiRoute("/auth/register", controller.Register)
 
 	return routes
