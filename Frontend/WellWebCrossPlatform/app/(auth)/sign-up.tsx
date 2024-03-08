@@ -7,6 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BasicButton from "components/BasicButton/BasicButton";
 import BasicSelectable from "components/BasicSelectable/BasicSelectable";
 import Divider from "components/Divider/Divider";
+import { useAPIClient } from "contexts/APIClient";
+import PageLayoutComponent from "components/PageLayoutComponent";
 
 const styles = StyleSheet.create({
     screenContainer: {
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
         minWidth: "100%",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#3D81E7",
+        backgroundColor: "#65ccc1",
     },
 
     buttonBlueText: {
@@ -79,6 +81,7 @@ export default function RegistrationScreen() {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const api_url = Platform.OS === "web" ? "localhost" : process.env.EXPO_PUBLIC_API_URL;
+    const APIClient = useAPIClient();
 
     const handleReigster = () => {
         if (password !== confirmPassword) {
@@ -87,25 +90,24 @@ export default function RegistrationScreen() {
         }
         
         console.log(`POST http://${api_url}:8080/api/auth/register`);
-        fetch(`http://${api_url}:8080/api/auth/register`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        APIClient.post(`/api/auth/register`, {
                 username: username,
                 password: password,
-            }),
-        }).then(data => data.json()).then(data => {
-            console.log(data);
-            if (data.error) {
-                alert(data.error);
-            } else {
-                router.navigate("/");
-            }
-        }).catch(err => {
-            alert(err);
-        });
+            }).then((response) => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    throw new Error("Registration failed");
+                }
+            }).then((data) => {
+                APIClient.login(data.token);
+                if (router.canDismiss()) {
+                    router.dismissAll();
+                }
+                router.replace('/');
+            }).catch((error) => {
+                console.log("Error", error);
+            });
     }
     const handleBack = () => {
         if (router.canGoBack()) {
@@ -113,17 +115,13 @@ export default function RegistrationScreen() {
             router.back();
         } else {
             console.log("Can't go back, navigating to /");
-            router.navigate("/landing");
+            router.push("/landing");
         }
 
     }
 
     return (
-        <SafeAreaView>
-            <View style={styles.screenContainer}>
-                <View style={styles.TitleContainer}>
-                    <Text style={styles.TitleText}>Registration</Text>
-                </View>
+        <PageLayoutComponent title="Registration">
                 <View style={styles.ContentContainer}>
 
                     <Divider width={1}/>
@@ -184,7 +182,6 @@ export default function RegistrationScreen() {
                     </View>
 
                 </View>
-            </View>
-        </SafeAreaView>
+        </PageLayoutComponent>
     );
 }

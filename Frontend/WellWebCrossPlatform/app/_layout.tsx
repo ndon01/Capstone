@@ -12,6 +12,7 @@ import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { APIClientProvider, useAPIClient } from "contexts/APIClient";
 import { ConfigProvider } from "../contexts/Config";
+import { isStringLiteral } from "typescript";
 
 export {ErrorBoundary} from "expo-router";
 
@@ -21,6 +22,7 @@ SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout(): React.JSX.Element {
   // Load Fonts
+  const api_url = process.env.EXPO_PUBLIC_API_URL;
 
   const APIClient = useAPIClient();
   const routeSegments = useSegments();
@@ -69,7 +71,7 @@ export default function RootLayout(): React.JSX.Element {
         return;
       } else {
         console.log("APIClient is not authenticated");
-        router.navigate("/landing");
+        router.push("/landing");
         return;
       }
     }
@@ -84,10 +86,14 @@ export default function RootLayout(): React.JSX.Element {
   return (
     <>
       <StatusBar />
-      <GestureHandlerRootView style={{ flex: 1}}>
-        <ConfigProvider apiBaseUrl="PUT API URL HERE"> {/* Was changing between wifi ips in dev, in production this would be one url and really only needs to be in .env, config can be used for this use and also local user configs when needed later*/}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ConfigProvider apiBaseUrl={"http://10.102.126.152:8080"}>
           <APIClientProvider>
-            <Stack screenOptions={{headerShown: false}} />
+            <Stack initialRouteName='index' screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(misc)/landing" />
+              <Stack.Screen name="(protected)/(tabs)" />
+            </Stack>
           </APIClientProvider>
         </ConfigProvider>
       </GestureHandlerRootView>

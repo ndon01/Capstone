@@ -60,7 +60,7 @@ func (service *service) registerUser(username string, password string) (*string,
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 		Issuer:    "Auth",
-		Audience:  jwt.ClaimStrings{"Auth"},
+		Audience:  jwt.ClaimStrings{"All"},
 	}
 
 	// Generate Token

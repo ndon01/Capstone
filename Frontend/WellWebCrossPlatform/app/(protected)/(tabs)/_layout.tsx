@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Tabs } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome, Feather } from "@expo/vector-icons";
+import { View } from "react-native";
 
 export default function TabLayout() {
   useEffect(() => {
@@ -10,47 +11,61 @@ export default function TabLayout() {
 
   return (
     <Tabs
+    
       screenOptions={{
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#65ccc1",
+          borderTopColor: "#65ccc1",
+
+    
+        },
+      
+        tabBarActiveTintColor: "white",
+        tabBarInactiveTintColor: "#113950",
+
       }}
     >
+
       <Tabs.Screen
         name="home"
         options={{
           title: "Home",
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused, color }) => (
             <FontAwesome
               name="home"
               size={24}
-              color={focused ? "#3D81E7" : "black"}
+              color={color}
             />
           ),
-          tabBarActiveTintColor: "#3D81E7",
         }}
       />
       <Tabs.Screen
         name="diary"
         options={{
           title: "Diary",
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused, color }) => (
             <FontAwesome
               name="book"
               size={24}
-              color={focused ? "#3D81E7" : "black"}
+              color={color}
             />
           ),
-          tabBarActiveTintColor: "#3D81E7",
         }}
       />
+    
+        
+
+
       <Tabs.Screen
         name="more"
         options={{
           title: "More",
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused, color }) => (
             <Feather
               name="more-horizontal"
               size={24}
-              color={focused ? "#3D81E7" : "black"}
+              color={color}
             />
           ),
         }}

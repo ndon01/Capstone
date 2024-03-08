@@ -19,3 +19,17 @@ func ValidateContentType(ContentType string, w http.ResponseWriter, r *http.Requ
 
 	return 0
 }
+
+func GetBearerToken(r *http.Request) *string {
+	token := r.Header.Get("Authorization")
+	if len(token) == 0 {
+		return nil
+	}
+
+	// remove the "Bearer " prefix, if it exists
+	if len(token) > 7 && token[:7] == "Bearer " {
+		token = token[7:]
+	}
+
+	return &token
+}

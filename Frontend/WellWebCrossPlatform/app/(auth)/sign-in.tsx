@@ -10,6 +10,7 @@ import Divider from "components/Divider/Divider";
 import * as SecureStore from 'expo-secure-store';
 import { useAPIClient } from "contexts/APIClient";
 import useConfig from "contexts/Config";
+import PageLayoutComponent from "components/PageLayoutComponent";
 
 const styles = StyleSheet.create({
     screenContainer: {
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
         minWidth: "100%",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#3D81E7",
+        backgroundColor: "#65ccc1",
     },
 
     buttonBlueText: {
@@ -85,38 +86,25 @@ export default function LoginScreen() {
     const router = useRouter();
 
     const handleLogin = async () => {
-        console.log("Logging in with username", username, "and password", password);
-        console.log("POST", `http://${Config.apiBaseUrl}:8080/api/auth/login`);
-        fetch(`http://${Config.apiBaseUrl}:8080/api/auth/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password,
-            }),
+        APIClient.post("/api/auth/login", {
+            username: username,
+            password: password
         }).then((response) => {
+            console.log("Response", response);
             if (response.status === 200) {
-                console.log("Login successful");
                 return response.json();
             } else {
-                console.log("Login failed");
                 throw new Error("Login failed");
             }
         }).then((data) => {
-            console.log("Data", data);
-
-                APIClient.login(data.token);
-                // 1 way to clear the navigation stack until they implement a better way
-                while(router.canGoBack()) {
-                    router.back();
-                }
-                router.replace("/home");
-            
+            APIClient.login(data.token);
+            if (router.canDismiss()) {
+                router.dismissAll();
+            }
+            router.replace('/');
         }).catch((error) => {
             console.error("Error", error);
-            alert("Login failed");
+            alert("login failed");
         });
     }
 
@@ -132,11 +120,7 @@ export default function LoginScreen() {
     }
 
     return (
-        <SafeAreaView>
-            <View style={styles.screenContainer}>
-                <View style={styles.TitleContainer}>
-                    <Text style={styles.TitleText}>Login</Text>
-                </View>
+        <PageLayoutComponent title='Login'>
                 <View style={styles.ContentContainer}>
 
                     <Divider width={1}/>
@@ -180,7 +164,6 @@ export default function LoginScreen() {
                     </View>
 
                 </View>
-            </View>
-        </SafeAreaView>
+        </PageLayoutComponent>
     );
 }

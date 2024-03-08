@@ -4,28 +4,13 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import Divider from 'components/Divider/Divider';
+import PageLayoutComponent from 'components/PageLayoutComponent';
 
 export default function SettingsPage() {
     const SafeAreaInsets = useSafeAreaInsets();
 
     return (
-        <View style={[styles.container, { paddingTop: SafeAreaInsets.top }]}>
-            <View style={styles.header}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => {
-                        if (router.canGoBack()) {
-                            router.back();
-                        } else {
-                            router.navigate('/more')
-                        }
-                    }}
-                >
-                    <AntDesign name="arrowleft" size={24} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.title}>Settings</Text>
-                <View style={styles.placeholderView}></View>
-            </View>
+        <PageLayoutComponent title='Settings'>
             <ScrollView style={{
                 flex: 1
             }}>
@@ -33,7 +18,7 @@ export default function SettingsPage() {
                 <TouchableOpacity
                     onPress={() => {
                         console.log('Navigating to settings');
-                        router.navigate('/settings');
+                        router.push('/settings');
                     }}
                     style={styles.settingsButton}
                 >
@@ -45,7 +30,7 @@ export default function SettingsPage() {
 
             </ScrollView>
 
-        </View>
+        </PageLayoutComponent>
     );
 }
 

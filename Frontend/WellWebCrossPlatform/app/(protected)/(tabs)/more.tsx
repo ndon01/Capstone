@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Button, Text, View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Alert, Button, Text, View, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useAPIClient } from 'contexts/APIClient';
 import { router, useNavigation, useNavigationContainerRef } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,6 +12,22 @@ export default function MoreScreen() {
     const nav = useNavigationContainerRef();
     const handleLogout = () => {
         console.log('Can go back?', nav.canGoBack());
+
+        if (Platform.OS === 'web') {
+            var answer = confirm('Are you sure you want to logout?');
+
+            if (answer) {
+                // Call your logout function here
+                APIClient.logout();
+                if (router.canDismiss()) {
+                    router.dismissAll();
+                }
+                router.replace('/');
+            }
+
+            return;
+        }
+
 
         Alert.alert(
             '',
@@ -28,12 +44,10 @@ export default function MoreScreen() {
                     onPress: () => {
                         // Call your logout function here
                         APIClient.logout();
-
-                        // 1 way to clear the navigation stack until they implement a better way
-                        while (router.canGoBack()) {
-                            router.back();
+                        if (router.canDismiss()) {
+                            router.dismissAll();
                         }
-                        router.navigate('/landing');
+                        router.replace('/');
                     },
                 },
             ],
@@ -48,7 +62,7 @@ export default function MoreScreen() {
                 <TouchableOpacity
                     onPress={() => {
                         console.log('Navigating to settings');
-                        router.navigate('/settings');
+                        router.push('/settings');
                     }}
                     style={styles.settingsButton}
                 >
@@ -58,11 +72,11 @@ export default function MoreScreen() {
                 <Divider width={1} />
             </ScrollView>
 
-            <View>
-                <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                    <Text style={styles.logoutText}>Logout</Text>
-                </TouchableOpacity>
-            </View>
+            
+            <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+            
         </View>
     );
 }
@@ -91,7 +105,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: 44,
-        backgroundColor: 'rgb(61, 129, 231)',
+        backgroundColor: 'rgb(250, 50, 50)',
     },
     logoutText: {
         color: 'white',

@@ -1,15 +1,16 @@
 import { router, useNavigation } from "expo-router";
 import React, { useEffect } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BasicButton from "components/BasicButton/BasicButton";
 import Divider from "components/Divider/Divider";
+import LogoNoBackground from "assets/images/LogoNoBackground.png";
 
 export default function LandingScreen() {
   const handleClickLogin = () => {
     console.log("Login button clicked");
-    router.navigate({
+    router.push({
       pathname: "/sign-in",
     })
   };
@@ -18,7 +19,7 @@ export default function LandingScreen() {
 
   const handleClickRegister = () => {
     console.log("Register button clicked");
-    router.navigate({
+    router.push({
       pathname: "/sign-up",
     })
   };
@@ -39,7 +40,14 @@ export default function LandingScreen() {
     <SafeAreaView>
       <View style={styles.screenContainer}>
         <View style={styles.ContentContainer}>
-          <Text>Welcome to WellWeb!</Text>
+          <Image
+            source={LogoNoBackground}
+            style={{
+              width: 400,
+              height: 400,
+              resizeMode: "contain",
+            }}
+          />
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -71,7 +79,7 @@ const styles = StyleSheet.create({
 
   ContentContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
 
@@ -90,7 +98,7 @@ const styles = StyleSheet.create({
     minWidth: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#3D81E7",
+    backgroundColor: "#65ccc1",
   },
 
   buttonBlueText: {

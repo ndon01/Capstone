@@ -3,6 +3,7 @@ package app
 import (
 	"WellWeb/internal/core/server"
 	"WellWeb/internal/pkg/auth"
+	"WellWeb/internal/pkg/foods"
 	"fmt"
 )
 
@@ -46,5 +47,6 @@ func (app *app) initPkg() {
 
 	// Initialize all packages (modules)
 	auth.Init(&server)
+	foods.Init(&server)
 
 }
